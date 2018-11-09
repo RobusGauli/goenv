@@ -1,4 +1,3 @@
-ColorJSON: The Fast Color JSON Marshaller for Go
 Dot.Env: Fast Env Decoder to Go-Struct for Go 
 ================================================
 
