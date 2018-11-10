@@ -22,6 +22,6 @@ func main() {
 	if err := goenv.ParseEnv(&config); err != nil {
 		fmt.Println(err)
 	}
-	fmt.Println(config.Ports.Age)
+	fmt.Println(config.Ports)
 
 }

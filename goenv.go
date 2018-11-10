@@ -89,7 +89,12 @@ func (e *Env) For(v interface{}) error {
 		if key == "" {
 			key = strings.ToUpper(sField.Name)
 		}
-
+		if dVal.Field(i).Kind() == reflect.Struct {
+			if dVal.Field(i).CanAddr() {
+				// call itself if kind is struct
+				e.For(dVal.Field(i).Addr().Interface())
+			}
+		}
 		err := assignEnv(dVal.Field(i), key)
 		if err != nil {
 			return err
