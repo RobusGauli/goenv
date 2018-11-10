@@ -50,7 +50,7 @@ Vanilla Usage
 // initiate config struct
 var config Config
 if err := goenv.New().FromEnv().For(&config); err != nil {
-		log.Fatal(err)
+	log.Fatal(err)
 }
 fmt.Println(config)
 // Done
