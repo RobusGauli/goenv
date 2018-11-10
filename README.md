@@ -1,4 +1,4 @@
-Dot.Env: Fast Env Decoder to Go-Struct for Go 
+GoEnv: Fast Env Decoder to Go-Struct for Go 
 ================================================
 
 What is this?
@@ -17,7 +17,7 @@ Installation
 ------------
 
 ```sh
-go get -u github.com/RobusGauli/dotenv
+go get -u github.com/RobusGauli/goenv
 ```
 
 Usage
@@ -26,20 +26,22 @@ Usage
 Setup
 
 ```go
-import "github.com/RobusGauli/dotenv"
+package main
 
-str := `{
-  APP_SECRET=234234
-  APP_PASSWORD=13#'1@
-  DB_URL=sqlite:///
-}`
+import (
+	"fmt"
+	"log"
 
-// Create an intersting JSON object to marshal in a pretty format
+	"github.com/RobusGauli/goenv"
+)
+
+// Config struct
 type Config struct {
-  AppSecret string `env:"APP_SECRET"`
-  AppPassword string `env:"APP_PASSWORD"`
-  DbURL string `env:"DB_URL"`
+	GoPath   string `env:"GOPATH"`
+	JavaHome string `env:"JAVA_HOME"`
+	Pwd      string `env:"PWD"`
 }
+
 ```
 
 Vanilla Usage
@@ -47,8 +49,10 @@ Vanilla Usage
 ```go
 // initiate config struct
 var config Config
-// decode passing the pointer to struct
-err := dotenv.NewDecoder(string.NewReader(str)).Decode(&config)
+if err := goenv.New().FromEnv().For(&config); err != nil {
+		log.Fatal(err)
+}
+fmt.Println(config)
 // Done
 ```
 

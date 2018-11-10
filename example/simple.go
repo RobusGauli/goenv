@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/RobusGauli/dotenv"
+	"github.com/RobusGauli/goenv"
 )
 
 // Config struct
@@ -16,7 +16,7 @@ type Config struct {
 
 func main() {
 	var config Config
-	if err := dotenv.New().FromEnv().For(&config); err != nil {
+	if err := goenv.New().FromEnv().For(&config); err != nil {
 		log.Fatal(err)
 	}
 	fmt.Println(config)

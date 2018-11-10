@@ -1,4 +1,4 @@
-package dotenv
+package goenv
 
 import (
 	"bufio"
