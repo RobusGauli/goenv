@@ -3,9 +3,11 @@ package goenv
 import (
 	"bufio"
 	"errors"
+	"fmt"
 	"io"
 	"os"
 	"reflect"
+	"strconv"
 	"strings"
 )
 
@@ -13,7 +15,22 @@ import (
 var (
 	ErrInvalidArgType  = errors.New("invalid argument type to encoder")
 	ErrValueSetFailure = errors.New("value cannot be set")
+	ErrUnsupportedType = errors.New("unsupported value conversion")
 )
+
+var integerBitSize = map[reflect.Kind]int{
+	reflect.Int:     0,
+	reflect.Int8:    8,
+	reflect.Int16:   16,
+	reflect.Int32:   32,
+	reflect.Int64:   64,
+	reflect.Uint:    0,
+	reflect.Uint8:   8,
+	reflect.Uint32:  32,
+	reflect.Uint64:  64,
+	reflect.Float32: 32,
+	reflect.Float64: 64,
+}
 
 // Env ..
 type Env struct {
@@ -84,13 +101,56 @@ func (e *Env) For(v interface{}) error {
 func assignEnv(val reflect.Value, key string) error {
 	// check to see if there is a
 	envValue, ok := os.LookupEnv(key)
+	// strings.
 	if !ok {
 		return nil
 	}
-	if !val.CanSet() || val.Type().Kind() != reflect.String {
+
+	if !val.CanSet() || !val.IsValid() {
 		return ErrValueSetFailure
 	}
-	val.SetString(envValue)
+
+	if err := setValueByKind(val, val.Kind(), envValue); err != nil {
+		return err
+	}
+	return nil
+}
+
+func setValueByKind(val reflect.Value, kind reflect.Kind, envValue string) error {
+	switch kind {
+	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
+		parsedInt, err := strconv.ParseInt(envValue, 10, integerBitSize[kind])
+		if err != nil {
+			return fmt.Errorf("could not parse \"%s\" of type string to type %s", envValue, kind.String())
+		}
+		// if it is not the case
+		if !val.OverflowInt(parsedInt) {
+			val.SetInt(parsedInt)
+		}
+	case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
+		parsedUint, err := strconv.ParseUint(envValue, 10, integerBitSize[kind])
+		if err != nil {
+			return fmt.Errorf("could not parse %s to %s", envValue, kind.String())
+		}
+		if !val.OverflowUint(parsedUint) {
+			val.SetUint(parsedUint)
+		}
+
+	case reflect.String:
+		val.SetString(envValue)
+
+	case reflect.Float32, reflect.Float64:
+		parsedFloat, err := strconv.ParseFloat(envValue, integerBitSize[kind])
+		if err != nil {
+			return nil
+		}
+		if !val.OverflowFloat(parsedFloat) {
+			val.SetFloat(parsedFloat)
+		}
+	default:
+		return ErrUnsupportedType
+	}
+
 	return nil
 }
 

@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"log"
 
 	"github.com/RobusGauli/goenv"
 )
@@ -11,14 +10,18 @@ import (
 type Config struct {
 	GoPath   string `env:"GOPATH"`
 	JavaHome string `env:"JAVA_HOME"`
-	Pwd      string `env:"PWD"`
+	Ports    struct {
+		Name string `env:"NAME"`
+		Age  int    `env:"AGE"`
+	}
+	Port int `env:"PORT"`
 }
 
 func main() {
 	var config Config
 	if err := goenv.ParseEnv(&config); err != nil {
-		log.Fatal(err)
+		fmt.Println(err)
 	}
-	fmt.Println(config)
+	fmt.Println(config.Ports.Age)
 
 }
