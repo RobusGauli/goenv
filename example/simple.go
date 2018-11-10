@@ -1,6 +1,9 @@
 package main
 
 import (
+	"fmt"
+	"log"
+
 	"github.com/RobusGauli/dotenv"
 )
 
@@ -8,13 +11,14 @@ import (
 type Config struct {
 	GoPath   string `env:"GOPATH"`
 	JavaHome string `env:"JAVA_HOME"`
-	Pwd      string `env:"PWD"`
+	Pwd      string `env:"pope"`
 }
 
 func main() {
 	var config Config
-	f := dotenv
-		.LoadFromEnv()
-		.For(&config)
+	if err := dotenv.New().FromEnv().For(&config); err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(config)
 
 }
