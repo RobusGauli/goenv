@@ -49,7 +49,7 @@ Vanilla Usage
 ```go
 // initiate config struct
 var config Config
-if err := goenv.New().FromEnv().For(&config); err != nil {
+if err := goenv.ParseEnv(&config); err != nil {
 	log.Fatal(err)
 }
 fmt.Println(config)

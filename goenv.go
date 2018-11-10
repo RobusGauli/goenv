@@ -93,3 +93,10 @@ func assignEnv(val reflect.Value, key string) error {
 	val.SetString(envValue)
 	return nil
 }
+
+// these are higher level apis for the lib
+
+// ParseEnv parses the environment variables into struct
+func ParseEnv(i interface{}) error {
+	return New().FromEnv().For(i)
+}

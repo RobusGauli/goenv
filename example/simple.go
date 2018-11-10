@@ -11,12 +11,12 @@ import (
 type Config struct {
 	GoPath   string `env:"GOPATH"`
 	JavaHome string `env:"JAVA_HOME"`
-	Pwd      string `env:"pope"`
+	Pwd      string `env:"PWD"`
 }
 
 func main() {
 	var config Config
-	if err := goenv.New().FromEnv().For(&config); err != nil {
+	if err := goenv.ParseEnv(&config); err != nil {
 		log.Fatal(err)
 	}
 	fmt.Println(config)
