@@ -15,9 +15,6 @@ var (
 	ErrValueSetFailure = errors.New("value cannot be set")
 )
 
-// global
-var env *Env
-
 // Env ..
 type Env struct {
 	// weather to load from environment variables
@@ -47,7 +44,7 @@ func (e *Env) FromJSON(r io.Reader) *Env {
 	return e
 }
 
-// FromEnv ...
+// FromEnv ...;
 func (e *Env) FromEnv() *Env {
 	e.loadFromEnv = true
 	return e
