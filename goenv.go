@@ -122,13 +122,11 @@ func (e *Env) For(v interface{}) error {
 }
 
 func supportedKind(kind reflect.Kind) bool {
-	if _, ok := unsupportedKinds[kind]; ok {
-		return false
-	}
-
-	return true
+	_, ok := unsupportedKinds[kind]
+	return !ok
 }
 
+// assigns environment variables to the field in the struct
 func assignEnv(val reflect.Value, key string) error {
 	// check to see if there is a
 	envValue, ok := os.LookupEnv(key)
@@ -147,6 +145,7 @@ func assignEnv(val reflect.Value, key string) error {
 	return nil
 }
 
+// sets the value of the struct field by trying to parse it to it's kind
 func setValueByKind(val reflect.Value, kind reflect.Kind, envValue string) error {
 	switch kind {
 	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
