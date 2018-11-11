@@ -32,6 +32,21 @@ var integerBitSize = map[reflect.Kind]int{
 	reflect.Float64: 64,
 }
 
+var unsupportedKinds = map[reflect.Kind]bool{
+	reflect.Array:         true,
+	reflect.Bool:          true,
+	reflect.Chan:          true,
+	reflect.Complex128:    true,
+	reflect.Complex64:     true,
+	reflect.Func:          true,
+	reflect.Interface:     true,
+	reflect.Invalid:       true,
+	reflect.Map:           true,
+	reflect.Slice:         true,
+	reflect.Uintptr:       true,
+	reflect.UnsafePointer: true,
+}
+
 // Env ..
 type Env struct {
 	// weather to load from environment variables
@@ -83,7 +98,10 @@ func (e *Env) For(v interface{}) error {
 	}
 	numField := dVal.NumField()
 	for i := 0; i < numField; i++ {
-
+		// check to see if the reflect.kind is supported for setting value
+		if !supportedKind(dVal.Field(i).Kind()) {
+			continue
+		}
 		sField := dVal.Type().Field(i)
 		key := sField.Tag.Get("env")
 		if key == "" {
@@ -101,6 +119,14 @@ func (e *Env) For(v interface{}) error {
 		}
 	}
 	return nil
+}
+
+func supportedKind(kind reflect.Kind) bool {
+	if _, ok := unsupportedKinds[kind]; ok {
+		return false
+	}
+
+	return true
 }
 
 func assignEnv(val reflect.Value, key string) error {
